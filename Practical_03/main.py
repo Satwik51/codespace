@@ -21,53 +21,60 @@ class StackADT:
     def pop(self):
         if self.isEmpty():
             print("Stack Underflow!")
+            return None
         else:
             value = self.stack[self.top]
             self.stack[self.top] = None
             self.top -= 1
-            print("Popped:", value)
+            return value
 
     def peek(self):
         if self.isEmpty():
             print("Stack is Empty!")
+            return None
         else:
-            print("Top element:", self.stack[self.top])
-
+            return self.stack[self.top]
 
 def parenthesis_matching(expression):
-    stack = []
+    s = StackADT(capacity)
 
     for ch in expression:
-        if ch == '(':
-            stack.append(ch)
-        elif ch == ')':
-            if not stack:
-                return False
-            stack.pop()
+        if ch == '(' or ch == '{' or ch == '[':
+            s.push(ch)
 
-    return len(stack) == 0
+        elif ch == ')' or ch == '}' or ch == ']':
+            if s.isEmpty():
+                return False
+
+            top = s.pop()
+
+            if (ch == ')' and top != '(') or \
+               (ch == '}' and top != '{') or \
+               (ch == ']' and top != '['):
+                return False
+    return s.isEmpty()
 
 
 def postfix_evaluation(expression):
-    stack = []
+    s=StackADT(capacity)
 
     for ch in expression.split():
         if ch.isdigit():
-            stack.append(int(ch))
+            s.push(int(ch))
         else:
-            b = stack.pop()
-            a = stack.pop()
+            b = s.pop()
+            a = s.pop()
 
             if ch == '+':
-                stack.append(a + b)
+                s.push(a + b)
             elif ch == '-':
-                stack.append(a - b)
+                s.push(a - b)
             elif ch == '*':
-                stack.append(a * b)
+                s.push(a * b)
             elif ch == '/':
-                stack.append(a / b)
+                s.push(a / b)
 
-    return stack.pop()
+    return s.pop()
 
 
 # Main Menu
@@ -93,10 +100,14 @@ while True:
             s.push(value)
 
         case 2:
-            s.pop()
+            value = s.pop()
+            if value is not None:
+                print("Popped:", value)
 
         case 3:
-            s.peek()
+            value = s.peek()
+            if value is not None:
+                print("Top element:", value)
 
         case 4:
             print("Stack is Empty" if s.isEmpty() else "Stack is Not Empty")
